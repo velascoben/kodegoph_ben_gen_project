@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">NRW</string>
+    <string name="distance_value">%d meters</string>
 </resources>

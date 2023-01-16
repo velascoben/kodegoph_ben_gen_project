@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        // SESSIONS
         // Data Source
         var sessionList: MutableList<Sessions> = mutableListOf<Sessions>(
             Sessions("2:30AM", "Jan 30", "Emergency NRW Session"),
@@ -28,10 +29,31 @@ class MainActivity : AppCompatActivity() {
             Sessions("2:00AM", "Apr 1", "Scheduled NRW Session"),
             Sessions("2:30AM", "Apr 30", "Scheduled NRW Session"),
         )
+
+        // Initialization
         val adapter = SessionAdapter(sessionList)
+
+        // Binding Adapter
         binding.rvSessions.adapter = adapter
         binding.rvSessions.layoutManager = LinearLayoutManager(applicationContext,LinearLayoutManager.HORIZONTAL,false)
 
+
+        // SESSIONS
+        // Data Source
+        var usersList: MutableList<Users> = mutableListOf<Users>(
+            Users("001", "ben20", 5,R.drawable.ic_user),
+            Users("002", "eugeneRaygun", 6,R.drawable.ic_user),
+            Users("003", "albertMC2", 4,R.drawable.ic_user),
+            Users("004", "metaBenny", 3,R.drawable.ic_user),
+            Users("005", "pioneerMe", 3,R.drawable.ic_user),
+        )
+
+        // Initialization
+        val adapterUsers = UsersAdapter(usersList)
+
+        // Binding Adapter
+        binding.rvUsers.adapter = adapterUsers
+        binding.rvUsers.layoutManager = LinearLayoutManager(applicationContext,LinearLayoutManager.HORIZONTAL,false)
 
         // Get data from previous screen
         //var name: String? = intent.getStringExtra("nameID")
