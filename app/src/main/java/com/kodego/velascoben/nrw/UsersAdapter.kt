@@ -1,10 +1,10 @@
 package com.kodego.velascoben.nrw
 
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.kodego.velascoben.nrw.databinding.UserItemBinding
+import com.kodego.velascoben.nrw.db.Users
 
 class UsersAdapter (var userModel : List<Users>) : RecyclerView.Adapter<UsersAdapter.UserViewHolder>() {
 

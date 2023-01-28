@@ -6,10 +6,13 @@ import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
 import com.kodego.velascoben.nrw.databinding.ActivityLoginBinding
+import com.kodego.velascoben.nrw.db.UsersDao
 
 class Login : AppCompatActivity() {
 
     lateinit var binding : ActivityLoginBinding
+
+    private var dao = UsersDao()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -17,7 +20,7 @@ class Login : AppCompatActivity() {
         setContentView(binding.root)
 
         // Get Reference to TextView
-        val tvForgotten = binding.tvForgotPass as TextView
+        val tvForgotten = binding.tvForgotPass
         // Set On-click Listener
         tvForgotten.setOnClickListener {
             val intent = Intent(this, ForgotPassword::class.java)
@@ -25,7 +28,7 @@ class Login : AppCompatActivity() {
         }
 
         // Get Reference to TextView
-        val tvRegisterHere = binding.tvRegister as TextView
+        val tvRegisterHere = binding.tvRegister
         // Set On-click Listener
         tvRegisterHere.setOnClickListener {
             val intent = Intent(this, Registration::class.java)
@@ -33,6 +36,9 @@ class Login : AppCompatActivity() {
         }
 
         binding.btnLogin.setOnClickListener() {
+
+            dao.get()
+
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }

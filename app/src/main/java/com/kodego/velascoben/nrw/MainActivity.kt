@@ -3,13 +3,9 @@ package com.kodego.velascoben.nrw
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kodego.velascoben.nrw.databinding.ActivityMainBinding
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.kodego.velascoben.nrw.db.Users
 
 class MainActivity : AppCompatActivity() {
 
@@ -41,11 +37,11 @@ class MainActivity : AppCompatActivity() {
         // SESSIONS
         // Data Source
         var usersList: MutableList<Users> = mutableListOf<Users>(
-            Users("001", "ben20", 5,R.drawable.ic_user),
-            Users("002", "eugeneRaygun", 6,R.drawable.ic_user),
-            Users("003", "albertMC2", 4,R.drawable.ic_user),
-            Users("004", "metaBenny", 3,R.drawable.ic_user),
-            Users("005", "pioneerMe", 3,R.drawable.ic_user),
+            Users("Ben", "Velasco","ben20", "","detector",R.drawable.ic_user),
+            Users("Eugene", "Santos","eugeneRaygun", "","plumber",R.drawable.ic_user),
+            Users("Albert", "Velasco","albertMC2", "","detector",R.drawable.ic_user),
+            Users("Benny", "Valdez","metaBenny", "","plumber",R.drawable.ic_user),
+            Users("Bench", "Mark","pioneerMe", "","detector",R.drawable.ic_user),
         )
 
         // Initialization

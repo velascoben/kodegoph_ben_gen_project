@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "449989941519",
+    "project_id": "nrw-session",
+    "storage_bucket": "nrw-session.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:449989941519:android:2f88e4769d8e1f721f467a",
+        "android_client_info": {
+          "package_name": "com.kodego.velascoben.nrw"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "449989941519-mnhclir8osbhd7ccvavmc9e01psq802n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEnYUu4vgnRghWIT75VwrycvawbJRniIM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "449989941519-mnhclir8osbhd7ccvavmc9e01psq802n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
