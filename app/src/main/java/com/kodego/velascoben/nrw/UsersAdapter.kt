@@ -1,12 +1,14 @@
 package com.kodego.velascoben.nrw
 
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.storage.FirebaseStorage
 import com.kodego.velascoben.nrw.databinding.UserItemBinding
-import com.kodego.velascoben.nrw.db.Users
+import java.io.File
 
-class UsersAdapter (var userModel : List<Users>) : RecyclerView.Adapter<UsersAdapter.UserViewHolder>() {
+class UsersAdapter(var userModel: ArrayList<SortUsers>) : RecyclerView.Adapter<UsersAdapter.UserViewHolder>() {
 
     inner class UserViewHolder(var binding : UserItemBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -18,7 +20,21 @@ class UsersAdapter (var userModel : List<Users>) : RecyclerView.Adapter<UsersAda
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
         holder.binding.apply {
-            userImage.setImageResource(userModel[position].userPhoto)
+            if(userModel[position].userPhoto == "") {
+                userImage.setImageResource(R.drawable.ic_user)
+            } else {
+                // Retrieve Image
+                val imageName = userModel[position].userPhoto
+                val storageRef = FirebaseStorage.getInstance().reference.child("images/$imageName")
+                val localFile = File.createTempFile("tempImage","jpg")
+                storageRef.getFile(localFile)
+                    .addOnSuccessListener {
+                    val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+                    userImage.setImageBitmap(bitmap)
+                }
+
+
+            }
         }
     }
 

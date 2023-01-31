@@ -6,6 +6,7 @@ import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.location.Location
 import android.net.Uri
@@ -40,6 +41,7 @@ import com.kodego.velascoben.nrw.db.UsersDao
 import com.kodego.velascoben.nrw.map.MapPresenter
 import com.kodego.velascoben.nrw.map.Ui
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.net.URI
 import java.text.SimpleDateFormat
 import java.util.*
@@ -50,8 +52,9 @@ class LeakReport : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var tvGpsLocation: TextView
     private lateinit var latitude : String
     private lateinit var longitude : String
+    private lateinit var userName : String
 
-    private var usersDao = UsersDao()
+    private var userDao = UsersDao()
     private var reportsDao = ReportsDao()
 
     private val presenter = MapPresenter(this)
@@ -63,6 +66,8 @@ class LeakReport : AppCompatActivity(), OnMapReadyCallback {
 
         binding = ActivityLeakReportBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        userName = intent.getStringExtra("userName").toString()
 
         binding.imgLeakage.visibility = View.GONE
 
@@ -140,7 +145,7 @@ class LeakReport : AppCompatActivity(), OnMapReadyCallback {
         val now = Date()
 
         // Initialized filename of the photo for upload and database record
-        val filename = "User_${formatter.format(now)}"
+        val filename = "$userName-${formatter.format(now)}"
         val storageReference = FirebaseStorage.getInstance().getReference("images/$filename")
 
         // Prepare data for submission to database
@@ -148,13 +153,15 @@ class LeakReport : AppCompatActivity(), OnMapReadyCallback {
         val reportTime : String = currentTime
         val repairDate : String = ""
         val repairTime : String = ""
+        val repairUser : String = ""
         val reportType : String = type
         val reportLong : String = longitude
         val reportLat : String = latitude
-        val reportUser : String = "dummyUser"
+        val reportUser : String = userName
         val reportAddress1 : String = binding.etAddress1.text.toString()
         val reportAddress2 : String = binding.etAddress2.text.toString()
         val reportPhoto : String = filename
+        val repairPhoto : String = ""
 
         val builder = AlertDialog.Builder(this@LeakReport)
         builder.setMessage("Are you sure to submit the report? Make sure all the details are correct as this cannot be changed anymore.")
@@ -164,6 +171,7 @@ class LeakReport : AppCompatActivity(), OnMapReadyCallback {
                 val progressDialog = ProgressDialog(this)
                 progressDialog.setMessage("Submitting report...")
                 progressDialog.setCancelable(false)
+                progressDialog
                 progressDialog.show()
 
                 // Get the data from an ImageView as bytes
@@ -175,7 +183,7 @@ class LeakReport : AppCompatActivity(), OnMapReadyCallback {
                 val data = baos.toByteArray()
 
                 // Add report to database
-                reportsDao.add(Reports(reportDate,reportTime,repairDate,repairTime,reportType,reportLong,reportLat,reportUser,reportAddress1,reportAddress2,reportPhoto))
+                reportsDao.add(Reports("",reportDate,reportTime,repairDate,repairTime,repairUser,reportType,reportLong,reportLat,reportUser,reportAddress1,reportAddress2,reportPhoto,repairPhoto))
 
                 // Save photo to database
                 storageReference.putBytes(data)
@@ -183,36 +191,44 @@ class LeakReport : AppCompatActivity(), OnMapReadyCallback {
                         binding.imgLeakage.setImageURI(null) // Removes photo from imageview
                         Toast.makeText(applicationContext,"Successfully Submitted",Toast.LENGTH_LONG).show()
                         if(progressDialog.isShowing) progressDialog.dismiss()
+
+                        val intent = Intent(this, MainActivity::class.java)
+                        intent.putExtra("userName", userName)
+                        finish()
+                        startActivity(intent)
+
                     }.addOnFailureListener{
                         if(progressDialog.isShowing) progressDialog.dismiss()
                         Toast.makeText(applicationContext,"Submission Failed",Toast.LENGTH_LONG).show()
                     }
+
             }
             .setNegativeButton("No") { dialog, id ->
                 // Dismiss the dialog
                 dialog.dismiss()
             }
+
         val alert = builder.create()
         alert.show()
 
 
-
     }
 
-    private fun startTracking() {
+    // For Start and Stop Tracking - For future development
+//    private fun startTracking() {
 //        binding.container.txtPace.text = ""
 //        binding.container.txtDistance.text = ""
 //        binding.container.txtTime.base = SystemClock.elapsedRealtime()
 //        binding.container.txtTime.start()
-        map.clear()
-
-        presenter.startTracking()
-    }
-
-    private fun stopTracking() {
-        presenter.stopTracking()
+//        map.clear()
+//
+//        presenter.startTracking()
+//    }
+//
+//    private fun stopTracking() {
+//        presenter.stopTracking()
 //        binding.container.txtTime.stop()
-    }
+//    }
 
     @SuppressLint("MissingPermission")
     private fun updateUi(ui: Ui) {

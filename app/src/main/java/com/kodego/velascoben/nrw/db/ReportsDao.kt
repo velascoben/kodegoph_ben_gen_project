@@ -11,14 +11,15 @@ class ReportsDao {
     }
 
     fun get(): Query {
-        return dbReference.collection("reports").orderBy("reportDate", Query.Direction.ASCENDING)
+        return dbReference.collection("reports")
     }
 //
 //    fun remove(key: String) {
 //        dbReference.child(key).removeValue()
 //    }
 //
-//    fun update(key : String, map : Map <String,String>) {
-//        dbReference.child(key).updateChildren(map)
-//    }
+    fun update(id : String, map : Map <String,String>) {
+        //dbReference.child(key).updateChildren(map)
+        dbReference.collection("reports").document(id).update(map)
+    }
 }

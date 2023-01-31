@@ -6,6 +6,6 @@ data class Users(
     val userName : String,
     val userPass : String,
     val userType : String,
-    val userPhoto : Int
+    val userPhoto : String
     ) {
 }
