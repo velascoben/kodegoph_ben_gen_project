@@ -80,22 +80,20 @@ class Login : AppCompatActivity() {
 
                                 val intent = Intent(this, MainActivity::class.java)
                                 intent.putExtra("userName", username)
-//                                Toast.makeText(
-//                                    applicationContext,
-//                                    "Logged in...",
-//                                    Toast.LENGTH_LONG
-//                                ).show()
+                                Toast.makeText(
+                                    applicationContext,
+                                    "Logged in...",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                                finish()
                                 startActivity(intent)
 
                             } else if (type == "plumber") {
 
                                 val intent = Intent(this, Plumber::class.java)
                                 intent.putExtra("userName", username)
-                                Toast.makeText(
-                                    applicationContext,
-                                    "Logged in...",
-                                    Toast.LENGTH_LONG
-                                ).show()
+                                Toast.makeText(applicationContext,"Logged in...",Toast.LENGTH_LONG).show()
+                                finish()
                                 startActivity(intent)
 
                             } else {
@@ -107,6 +105,7 @@ class Login : AppCompatActivity() {
                                     "Logged in...",
                                     Toast.LENGTH_LONG
                                 ).show()
+                                finish()
                                 startActivity(intent)
 
                             }

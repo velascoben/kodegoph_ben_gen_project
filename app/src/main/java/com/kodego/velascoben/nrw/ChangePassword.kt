@@ -24,6 +24,7 @@ class ChangePassword : AppCompatActivity() {
 
     lateinit var userID : String
     lateinit var userPass : String
+    lateinit var userType : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityChangePasswordBinding.inflate(layoutInflater)
@@ -39,6 +40,7 @@ class ChangePassword : AppCompatActivity() {
                 for (data in queryDocumentSnapshots.documents) {
 
                     userID = data.id
+                    userType = data["userType"].toString()
 
                 }
 
@@ -75,6 +77,18 @@ class ChangePassword : AppCompatActivity() {
                             userPass,
                         )
                         if(progressDialog.isShowing) progressDialog.dismiss()
+
+                        if(userType == "detector") {
+                            val intent = Intent(this, MainActivity::class.java)
+                            intent.putExtra("userName", userName)
+                            finish()
+                            startActivity(intent)
+                        } else {
+                            val intent = Intent(this, Plumber::class.java)
+                            intent.putExtra("userName", userName)
+                            finish()
+                            startActivity(intent)
+                        }
 
                     }
                     .setNegativeButton("No") { dialog, id ->

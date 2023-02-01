@@ -1,5 +1,6 @@
 package com.kodego.velascoben.nrw
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.ProgressDialog
@@ -12,7 +13,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings
+import android.view.MotionEvent
 import android.view.View
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import com.google.firebase.storage.FirebaseStorage
@@ -69,6 +72,20 @@ class UpdateLeak : AppCompatActivity() {
 
         binding.btnUpdate.setOnClickListener() {
             submitReport()
+        }
+
+        // Open Google Maps Here
+        binding.tvGPS.setEndIconOnClickListener() {
+            // Create a Uri from an intent string. Use the result to create an Intent.
+            val gmmIntentUri = Uri.parse("geo:0,0?z=18&q=$reportLat,$reportLong(Leak Here)")
+
+            // Create an Intent from gmmIntentUri. Set the action to ACTION_VIEW
+            val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+            // Make the Intent explicit by setting the Google Maps package
+            mapIntent.setPackage("com.google.android.apps.maps")
+
+            // Attempt to start an activity that can handle the Intent
+            startActivity(mapIntent)
         }
 
         reportDao.get()
@@ -190,7 +207,7 @@ class UpdateLeak : AppCompatActivity() {
                         Toast.makeText(applicationContext,"Successfully Updated",Toast.LENGTH_LONG).show()
                         if(progressDialog.isShowing) progressDialog.dismiss()
 
-                        val intent = Intent(this, Repair::class.java)
+                        val intent = Intent(this, Plumber::class.java)
                         intent.putExtra("userName", userName)
                         finish()
                         startActivity(intent)

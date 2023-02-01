@@ -24,7 +24,9 @@ class Plumber : AppCompatActivity() {
     lateinit var binding: ActivityPlumberBinding
     private var userDao = UsersDao()
     private var reportDao = ReportsDao()
-    private lateinit var userName : String
+    lateinit var userName : String
+    private lateinit var userType : String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityPlumberBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
@@ -39,7 +41,9 @@ class Plumber : AppCompatActivity() {
 
                 for (data in queryDocumentSnapshots.documents) {
 
+                    binding.tvFirstName.text = data["userFirst"].toString()
                     var userPhoto = data["userPhoto"].toString()
+                    userType = data["userType"].toString()
 
                     if(userPhoto != "") {
                         // Retrieve Image
@@ -64,6 +68,17 @@ class Plumber : AppCompatActivity() {
             }
 
         view()
+
+        binding.imgInformation.setOnClickListener() {
+            val builder = AlertDialog.Builder(this@Plumber)
+            builder.setMessage("This app was designed and created by Ben & Gen")
+                .setCancelable(false)
+                .setPositiveButton("OK") { dialog, id ->
+                    dialog.dismiss()
+                }
+            val alert = builder.create()
+            alert.show()
+        }
 
         binding.btnRepairList.setOnClickListener() {
             val intent = Intent(this, Repair::class.java)
@@ -99,13 +114,8 @@ class Plumber : AppCompatActivity() {
                                 val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
                                 binding.userImage.setImageBitmap(bitmap)
                             }
-
-
                     }
 
-//                        var id = data.id
-//
-//                        var username = data["userName"].toString()
                 }
 
             }
@@ -115,7 +125,11 @@ class Plumber : AppCompatActivity() {
 
     }
 
-    fun view() {
+    private fun view() {
+
+        var countReports : Int
+        var userReports : Int
+
         reportDao.get()
             .whereEqualTo("repairUser","")
             .get()
@@ -189,6 +203,101 @@ class Plumber : AppCompatActivity() {
                 }
 
             }
+            .addOnFailureListener {
+                Toast.makeText(applicationContext,"Error getting documents: ", Toast.LENGTH_LONG).show()
+            }
+
+
+        // Top Plumbers
+        userDao.get()
+            .get()
+            .addOnSuccessListener { queryDocumentSnapshots ->
+
+                val users: MutableList<SortedUsers> = mutableListOf()
+
+                for (data in queryDocumentSnapshots.documents) {
+
+                    val username = data["userName"].toString()
+                    val usertype = data["userType"].toString()
+                    val userPhoto = data["userPhoto"].toString()
+
+                    if(usertype == userType) {
+
+                        reportDao.get()
+                            .get()
+                            .addOnSuccessListener { snapShots ->
+
+                                userReports = 0
+                                countReports = 0
+
+                                for (info in snapShots.documents) {
+
+                                    val repairDate = info["repairDate"].toString()
+                                    val repairUser = info["repairUser"].toString()
+
+                                    if ((repairUser == username) && (repairDate != "")) {
+                                        countReports++
+                                    }
+
+                                    if ((repairUser == userName) && (repairDate != "")) {
+                                        userReports++
+                                    }
+
+                                }
+
+                                binding.tvUserReport.text = userReports.toString()
+
+                                if (countReports > 0) {
+                                    var user = SortedUsers(
+                                        countReports,
+                                        username,
+                                        userPhoto,
+                                    )
+
+                                    users.add(user)
+
+                                    // Initialize sorting
+                                    users.sortByDescending { it.userCount }
+                                    val adapter = UsersAdapter(users)
+
+                                    // Binding Adapter
+                                    binding.rvUsers.adapter = adapter
+                                    binding.rvUsers.layoutManager = LinearLayoutManager(
+                                        applicationContext,
+                                        LinearLayoutManager.HORIZONTAL,
+                                        false
+                                    )
+                                }
+
+                            }
+                            .addOnFailureListener {
+                                Toast.makeText(
+                                    applicationContext,
+                                    "Error getting documents: ",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                    }
+
+                }
+
+                // Initialization
+                //users = users.sortBy{it.userCount.dec()}
+                //users.sortedWith(compareBy { it.userCount })
+                users.sortByDescending { it.userCount }
+                val adapter = UsersAdapter(users)
+
+                // Binding Adapter
+                binding.rvUsers.adapter = adapter
+                binding.rvUsers.layoutManager = LinearLayoutManager(
+                    applicationContext,
+                    LinearLayoutManager.HORIZONTAL,
+                    false
+                )
+
+            }
+
+
             .addOnFailureListener {
                 Toast.makeText(applicationContext,"Error getting documents: ", Toast.LENGTH_LONG).show()
             }

@@ -4,11 +4,14 @@ import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SortedList
 import com.google.firebase.storage.FirebaseStorage
 import com.kodego.velascoben.nrw.databinding.UserItemBinding
+import com.kodego.velascoben.nrw.db.Reports
+import com.kodego.velascoben.nrw.db.Users
 import java.io.File
 
-class UsersAdapter(var userModel: ArrayList<SortUsers>) : RecyclerView.Adapter<UsersAdapter.UserViewHolder>() {
+class UsersAdapter(var userModel: MutableList<SortedUsers>) : RecyclerView.Adapter<UsersAdapter.UserViewHolder>() {
 
     inner class UserViewHolder(var binding : UserItemBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -20,6 +23,7 @@ class UsersAdapter(var userModel: ArrayList<SortUsers>) : RecyclerView.Adapter<U
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
         holder.binding.apply {
+            tvUserName.text = userModel[position].userName
             if(userModel[position].userPhoto == "") {
                 userImage.setImageResource(R.drawable.ic_user)
             } else {

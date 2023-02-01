@@ -1,12 +1,15 @@
 package com.kodego.velascoben.nrw
 
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.storage.FirebaseStorage
 import com.kodego.velascoben.nrw.databinding.ActivityRegistrationBinding
 import com.kodego.velascoben.nrw.db.Users
 import com.kodego.velascoben.nrw.db.UsersDao
+import java.io.File
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.security.NoSuchProviderException
@@ -37,28 +40,37 @@ class Registration : AppCompatActivity() {
             val username = binding.etUsername.text.toString()
             val password = binding.etPassword.text.toString().toMD5()
 
-            if (binding.rbDetector.isChecked) {
-                type = "detector"
-            } else if (binding.rbPlumber.isChecked) {
-                type = "plumber"
-            }
+            dao.get()
+                .whereEqualTo("userName",username)
+                .get()
+                .addOnSuccessListener {
 
-            dao.add(Users(firstname,lastname,username, password,type,""))
+                    Toast.makeText(applicationContext,"Username already exists. Choose another one.", Toast.LENGTH_LONG).show()
 
-            // Clear
-            binding.etFirstName.setText("")
-            binding.etLastName.setText("")
-            binding.etUsername.setText("")
-            binding.etPassword.setText("")
+                }
+                .addOnFailureListener {
+                    if (binding.rbDetector.isChecked) {
+                        type = "detector"
+                    } else if (binding.rbPlumber.isChecked) {
+                        type = "plumber"
+                    }
 
-            binding.rgType.clearCheck()
+                    dao.add(Users(firstname,lastname,username, password,type,""))
 
-            // create an intent to switch to MainActivity after adding new user
-            val intent = Intent(this, Login::class.java)
-            startActivity(intent)
+                    // Clear
+                    binding.etFirstName.setText("")
+                    binding.etLastName.setText("")
+                    binding.etUsername.setText("")
+                    binding.etPassword.setText("")
 
-            Toast.makeText(applicationContext,"User added successfully!", Toast.LENGTH_LONG).show()
+                    binding.rgType.clearCheck()
 
+                    // create an intent to switch to MainActivity after adding new user
+                    val intent = Intent(this, Login::class.java)
+                    startActivity(intent)
+
+                    Toast.makeText(applicationContext,"User added successfully!", Toast.LENGTH_LONG).show()
+                }
         }
     }
 

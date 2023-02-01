@@ -64,18 +64,20 @@ class Options : AppCompatActivity() {
         binding.btnUpdateInfo.setOnClickListener() {
             val intent = Intent(this, Profile::class.java)
             intent.putExtra("userName", userName)
+            finish()
             startActivity(intent)
         }
 
         binding.btnUpdatePass.setOnClickListener() {
             val intent = Intent(this, ChangePassword::class.java)
             intent.putExtra("userName", userName)
+            finish()
             startActivity(intent)
         }
 
         binding.btnLogout.setOnClickListener() {
             val builder = AlertDialog.Builder(this@Options)
-            builder.setMessage("Are you sure you want to Logout?")
+            builder.setMessage("Are you sure you want to logout?")
                 .setCancelable(false)
                 .setPositiveButton("Yes") { dialog, id ->
                     // Delete selected note from database

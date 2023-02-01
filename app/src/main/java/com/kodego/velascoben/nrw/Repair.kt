@@ -32,58 +32,6 @@ class Repair : AppCompatActivity() {
 
         userName = intent.getStringExtra("userName").toString()
 
-        binding.userImage.setOnClickListener() {
-            val intent = Intent(this, Profile::class.java)
-            intent.putExtra("userName", userName)
-            startActivity(intent)
-        }
-
-        userDao.get()
-            .whereEqualTo("userName",userName)
-            .get()
-            .addOnSuccessListener { queryDocumentSnapshots ->
-
-                for (data in queryDocumentSnapshots.documents) {
-
-                    // Initialized report type as null
-                    var userType : String = ""
-
-                    // Check leakage type is reported
-                    if (data["userType"].toString() == "detector") {
-                        userType = "Leak Detector"
-                    } else if (data["userType"].toString() == "plumber") {
-                        userType = "Plumber"
-                    }
-
-                    binding.tvFirstName.text = data["userFirst"].toString()
-                    binding.tvUserType.text = userType
-                    var userPhoto = data["userPhoto"].toString()
-
-                    if(userPhoto != "") {
-                        // Retrieve Image
-                        val imageName = userPhoto
-                        val storageRef = FirebaseStorage.getInstance().reference.child("images/$imageName")
-                        val localFile = File.createTempFile("tempImage","jpg")
-                        storageRef.getFile(localFile)
-                            .addOnSuccessListener {
-                                val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
-                                binding.userImage.setImageBitmap(bitmap)
-                            }
-
-                    } else {
-                        binding.userImage.setImageResource(R.drawable.ic_user)
-                    }
-
-//                        var id = data.id
-//
-//                        var username = data["userName"].toString()
-                }
-
-            }
-            .addOnFailureListener {
-                Toast.makeText(applicationContext,"Error getting documents: ", Toast.LENGTH_LONG).show()
-            }
-
         reportDao.get()
             .whereEqualTo("repairUser",userName).whereEqualTo("repairDate","")
             .get()
@@ -126,8 +74,8 @@ class Repair : AppCompatActivity() {
                         val intent = Intent(this, UpdateLeak::class.java)
                         intent.putExtra("userName", userName)
                         intent.putExtra("reportID", item.reportID)
+                        finish()
                         startActivity(intent)
-
                 }
 
             }

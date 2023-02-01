@@ -41,6 +41,7 @@ class Profile : AppCompatActivity() {
     lateinit var userFirst : String
     lateinit var userLast : String
     lateinit var userPass : String
+    lateinit var userType : String
     lateinit var userPhoto : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,6 +73,7 @@ class Profile : AppCompatActivity() {
                     userLast = data["userLast"].toString()
                     userName = data["userName"].toString()
                     userPass = data["userPass"].toString()
+                    userType = data["userType"].toString()
 
                     binding.etFirstName.setText(userFirst)
                     binding.etLastName.setText(userLast)
@@ -157,10 +159,17 @@ class Profile : AppCompatActivity() {
                             ).show()
                             if (progressDialog.isShowing) progressDialog.dismiss()
 
-                            val intent = Intent(this, Profile::class.java)
-                            intent.putExtra("userName", userName)
-                            finish()
-                            startActivity(intent)
+                            if(userType == "detector") {
+                                val intent = Intent(this, MainActivity::class.java)
+                                intent.putExtra("userName", userName)
+                                finish()
+                                startActivity(intent)
+                            } else {
+                                val intent = Intent(this, Plumber::class.java)
+                                intent.putExtra("userName", userName)
+                                finish()
+                                startActivity(intent)
+                            }
 
                         }.addOnFailureListener {
                             if (progressDialog.isShowing) progressDialog.dismiss()

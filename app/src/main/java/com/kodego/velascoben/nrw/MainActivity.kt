@@ -1,5 +1,7 @@
 package com.kodego.velascoben.nrw
 
+import android.app.AlertDialog
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
@@ -12,6 +14,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.kodego.velascoben.nrw.databinding.ActivityMainBinding
 import com.kodego.velascoben.nrw.db.Reports
 import com.kodego.velascoben.nrw.db.ReportsDao
+import com.kodego.velascoben.nrw.db.Users
 import com.kodego.velascoben.nrw.db.UsersDao
 import java.io.File
 
@@ -22,7 +25,6 @@ class MainActivity : AppCompatActivity() {
     private var reportDao = ReportsDao()
     lateinit var userName : String
     private lateinit var userType : String
-    val usersList: List<SortUsers> = listOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -39,6 +41,17 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        binding.imgInformation.setOnClickListener() {
+            val builder = AlertDialog.Builder(this@MainActivity)
+            builder.setMessage("This app was designed and created by Ben & Gen")
+                .setCancelable(false)
+                .setPositiveButton("OK") { dialog, id ->
+                    dialog.dismiss()
+                }
+            val alert = builder.create()
+            alert.show()
+        }
+
         userDao.get()
             .whereEqualTo("userName",userName)
             .get()
@@ -51,6 +64,8 @@ class MainActivity : AppCompatActivity() {
                     userType = data["userType"].toString()
 
                     if(userPhoto != "") {
+                        binding.userImage.setImageResource(R.drawable.ic_user)
+                    } else {
                         // Retrieve Image
                         val imageName = userPhoto
                         val storageRef = FirebaseStorage.getInstance().reference.child("images/$imageName")
@@ -60,8 +75,6 @@ class MainActivity : AppCompatActivity() {
                                 val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
                                 binding.userImage.setImageBitmap(bitmap)
                             }
-                    } else {
-                        binding.userImage.setImageResource(R.drawable.ic_user)
                     }
 
                 }
@@ -111,10 +124,12 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(applicationContext,"Error getting documents: ", Toast.LENGTH_LONG).show()
             }
 
-        // Top Leakages Reporters
+        // Top Leakage Reporters
         userDao.get()
             .get()
             .addOnSuccessListener { queryDocumentSnapshots ->
+
+                val users: MutableList<SortedUsers> = mutableListOf()
 
                 for (data in queryDocumentSnapshots.documents) {
 
@@ -126,18 +141,16 @@ class MainActivity : AppCompatActivity() {
 
                         reportDao.get()
                             .get()
-                            .addOnSuccessListener { queryDocumentSnapshots ->
+                            .addOnSuccessListener { snapShots ->
 
-                                var users: ArrayList<SortUsers> = ArrayList<SortUsers>()
-
-                                countReports = 0
                                 userReports = 0
+                                countReports = 0
 
-                                for (info in queryDocumentSnapshots.documents) {
+                                for (info in snapShots.documents) {
 
                                     val reportUser = info["reportUser"].toString()
 
-                                    if (reportUser == username) {
+                                    if (username == reportUser) {
                                         countReports++
                                     }
 
@@ -145,25 +158,21 @@ class MainActivity : AppCompatActivity() {
                                         userReports++
                                     }
 
-                                    var user = SortUsers(
-                                        username,
+                                }
+
+                                binding.tvUserReport.text = userReports.toString()
+
+                                if (countReports > 0) {
+                                    var user = SortedUsers(
                                         countReports,
+                                        username,
                                         userPhoto,
                                     )
 
                                     users.add(user)
 
-                                }
-
-                                binding.tvUserReport.text = userReports.toString()
-
-                                //var sortedUser = users.sortedWith(compareBy { it.userCount })
-
-                                //users = sortedUser as ArrayList<SortUsers>
-
-                                // Initialization
-                                //users.sortBy{it.userCount}
-                                users.sortedWith(compareBy { it.userCount })
+                                // Initialize sorting
+                                users.sortByDescending { it.userCount }
                                 val adapter = UsersAdapter(users)
 
                                 // Binding Adapter
@@ -173,6 +182,7 @@ class MainActivity : AppCompatActivity() {
                                     LinearLayoutManager.HORIZONTAL,
                                     false
                                 )
+                            }
 
                             }
                             .addOnFailureListener {
@@ -182,8 +192,8 @@ class MainActivity : AppCompatActivity() {
                                     Toast.LENGTH_LONG
                                 ).show()
                             }
-                    }
 
+                    }
                 }
 
                 }
@@ -192,9 +202,6 @@ class MainActivity : AppCompatActivity() {
             .addOnFailureListener {
                 Toast.makeText(applicationContext,"Error getting documents: ", Toast.LENGTH_LONG).show()
             }
-
-
-
 
         binding.btnReportLeak.setOnClickListener() {
             val mLocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -219,9 +226,3 @@ class MainActivity : AppCompatActivity() {
 
     }
 }
-
-class SortUsers (
-    val userName : String,
-    val userCount : Int,
-    val userPhoto : String
-        )
