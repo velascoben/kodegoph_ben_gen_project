@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">NRW</string>
+    <string name="app_name">FixLeaks</string>
     <string name="distance_value">%d meters</string>
     <string name="submit">Submit</string>
     <string name="address_1">Address 1</string>

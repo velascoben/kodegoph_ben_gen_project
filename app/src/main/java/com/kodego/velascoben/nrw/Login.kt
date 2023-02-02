@@ -31,7 +31,6 @@ class Login : AppCompatActivity() {
     private var dao = UsersDao()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

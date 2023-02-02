@@ -1,24 +1,18 @@
 package com.kodego.velascoben.nrw
 
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.storage.FirebaseStorage
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.QuerySnapshot
 import com.kodego.velascoben.nrw.databinding.ActivityRegistrationBinding
 import com.kodego.velascoben.nrw.db.Users
 import com.kodego.velascoben.nrw.db.UsersDao
-import java.io.File
 import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
-import java.security.NoSuchProviderException
-import java.security.SecureRandom
 import java.util.*
 import javax.crypto.*
-import javax.crypto.spec.IvParameterSpec
-import javax.crypto.spec.PBEKeySpec
-import javax.crypto.spec.SecretKeySpec
 
 
 class Registration : AppCompatActivity() {
@@ -43,33 +37,41 @@ class Registration : AppCompatActivity() {
             dao.get()
                 .whereEqualTo("userName",username)
                 .get()
-                .addOnSuccessListener {
+                .addOnSuccessListener { snapShot ->
 
-                    Toast.makeText(applicationContext,"Username already exists. Choose another one.", Toast.LENGTH_LONG).show()
+                    if(snapShot.isEmpty) {
+                        if (binding.rbDetector.isChecked) {
+                            type = "detector"
+                        } else if (binding.rbPlumber.isChecked) {
+                            type = "plumber"
+                        }
+
+                        dao.add(Users(firstname,lastname,username, password,type,""))
+
+                        // Clear
+                        binding.etFirstName.setText("")
+                        binding.etLastName.setText("")
+                        binding.etUsername.setText("")
+                        binding.etPassword.setText("")
+
+                        binding.rgType.clearCheck()
+
+                        // create an intent to switch to MainActivity after adding new user
+                        val intent = Intent(this, Login::class.java)
+                        startActivity(intent)
+
+                        Toast.makeText(applicationContext,"User added successfully!", Toast.LENGTH_LONG).show()
+                    } else {
+                        Toast.makeText(
+                            applicationContext,
+                            "Username already exists. Choose another one.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
 
                 }
                 .addOnFailureListener {
-                    if (binding.rbDetector.isChecked) {
-                        type = "detector"
-                    } else if (binding.rbPlumber.isChecked) {
-                        type = "plumber"
-                    }
-
-                    dao.add(Users(firstname,lastname,username, password,type,""))
-
-                    // Clear
-                    binding.etFirstName.setText("")
-                    binding.etLastName.setText("")
-                    binding.etUsername.setText("")
-                    binding.etPassword.setText("")
-
-                    binding.rgType.clearCheck()
-
-                    // create an intent to switch to MainActivity after adding new user
-                    val intent = Intent(this, Login::class.java)
-                    startActivity(intent)
-
-                    Toast.makeText(applicationContext,"User added successfully!", Toast.LENGTH_LONG).show()
+                    Toast.makeText(applicationContext,"Error getting documents: ", Toast.LENGTH_LONG).show()
                 }
         }
     }
