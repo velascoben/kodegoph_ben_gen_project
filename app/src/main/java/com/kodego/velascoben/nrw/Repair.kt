@@ -104,6 +104,7 @@ class Repair : AppCompatActivity() {
 
                         val intent = Intent(this, UpdateLeak::class.java)
                         intent.putExtra("userName", userName)
+                        intent.putExtra("userType", userType)
                         intent.putExtra("reportID", item.reportID)
                         finish()
                         startActivity(intent)

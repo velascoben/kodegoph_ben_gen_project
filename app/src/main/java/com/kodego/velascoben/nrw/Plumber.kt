@@ -153,6 +153,7 @@ class Plumber : AppCompatActivity() {
                             adapter.notifyDataSetChanged()
                             val intent = Intent(this, Plumber::class.java)
                             intent.putExtra("userName", userName)
+                            intent.putExtra("userType", userType)
                             finish()
                             startActivity(intent)
 
