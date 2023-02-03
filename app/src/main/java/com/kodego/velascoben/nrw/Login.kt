@@ -27,7 +27,6 @@ import kotlin.collections.ArrayList
 class Login : AppCompatActivity() {
 
     lateinit var binding : ActivityLoginBinding
-
     private var dao = UsersDao()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,6 +78,7 @@ class Login : AppCompatActivity() {
 
                                 val intent = Intent(this, MainActivity::class.java)
                                 intent.putExtra("userName", username)
+                                intent.putExtra("userType", type)
                                 Toast.makeText(
                                     applicationContext,
                                     "Logged in...",
@@ -91,6 +91,7 @@ class Login : AppCompatActivity() {
 
                                 val intent = Intent(this, Plumber::class.java)
                                 intent.putExtra("userName", username)
+                                intent.putExtra("userType", type)
                                 Toast.makeText(applicationContext,"Logged in...",Toast.LENGTH_LONG).show()
                                 finish()
                                 startActivity(intent)

@@ -19,6 +19,7 @@ class Options : AppCompatActivity() {
 
     lateinit var binding : ActivityOptionsBinding
     private lateinit var userName : String
+    private lateinit var userType : String
     private var userDao = UsersDao()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,6 +28,7 @@ class Options : AppCompatActivity() {
         setContentView(binding.root)
 
         userName = intent.getStringExtra("userName").toString()
+        userType = intent.getStringExtra("userType").toString()
 
         userDao.get()
             .whereEqualTo("userName",userName)
@@ -64,6 +66,7 @@ class Options : AppCompatActivity() {
         binding.btnUpdateInfo.setOnClickListener() {
             val intent = Intent(this, Profile::class.java)
             intent.putExtra("userName", userName)
+            intent.putExtra("userType", userType)
             finish()
             startActivity(intent)
         }
@@ -71,8 +74,20 @@ class Options : AppCompatActivity() {
         binding.btnUpdatePass.setOnClickListener() {
             val intent = Intent(this, ChangePassword::class.java)
             intent.putExtra("userName", userName)
+            intent.putExtra("userType", userType)
             finish()
             startActivity(intent)
+        }
+
+        binding.imgInformation.setOnClickListener() {
+            val builder = AlertDialog.Builder(this@Options)
+            builder.setMessage("This app was designed and created by Ben & Gen")
+                .setCancelable(false)
+                .setPositiveButton("OK") { dialog, id ->
+                    dialog.dismiss()
+                }
+            val alert = builder.create()
+            alert.show()
         }
 
         binding.btnLogout.setOnClickListener() {
@@ -84,7 +99,6 @@ class Options : AppCompatActivity() {
                     val progressDialog = ProgressDialog(this)
                     progressDialog.setMessage("Logging out...")
                     progressDialog.setCancelable(false)
-                    progressDialog
                     progressDialog.show()
 
                     // Logout of the app
@@ -100,6 +114,28 @@ class Options : AppCompatActivity() {
 
             val alert = builder.create()
             alert.show()
+        }
+
+    }
+
+    override fun onBackPressed() {
+
+        // To execute back press
+        // super.onBackPressed()
+
+        // To do something else
+        if(userType == "detector") {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.putExtra("userName", userName)
+            intent.putExtra("userType", userType)
+            finish()
+            startActivity(intent)
+        } else {
+            val intent = Intent(this, Plumber::class.java)
+            intent.putExtra("userName", userName)
+            intent.putExtra("userType", userType)
+            finish()
+            startActivity(intent)
         }
 
     }

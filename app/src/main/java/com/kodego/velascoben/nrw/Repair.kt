@@ -20,9 +20,9 @@ import java.io.File
 class Repair : AppCompatActivity() {
 
     lateinit var binding: ActivityRepairBinding
-    private var userDao = UsersDao()
     private var reportDao = ReportsDao()
     private lateinit var userName : String
+    private lateinit var userType : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -31,33 +31,64 @@ class Repair : AppCompatActivity() {
         setContentView(binding.root)
 
         userName = intent.getStringExtra("userName").toString()
+        userType = intent.getStringExtra("userType").toString()
 
         reportDao.get()
             .whereEqualTo("repairUser",userName).whereEqualTo("repairDate","")
             .get()
             .addOnSuccessListener { queryDocumentSnapshots ->
 
-                var reports : ArrayList<Reports> = ArrayList<Reports>()
+                val reports : ArrayList<Reports> = ArrayList<Reports>()
 
-                for (data in queryDocumentSnapshots.documents) {
+                if(!queryDocumentSnapshots.isEmpty) {
 
-                    var reportID = data.id
-                    val reportDate = data["reportDate"].toString()
-                    val reportTime = data["reportTime"].toString()
-                    val repairDate = data["repairDate"].toString()
-                    val repairTime = data["repairTime"].toString()
-                    val repairUser = data["repairUser"].toString()
-                    val reportType = data["reportType"].toString()
-                    val reportLong = data["reportLong"].toString()
-                    val reportLat = data["reportLat"].toString()
-                    val reportUser = data["reportUser"].toString()
-                    val reportAddress1 = data["reportAddress1"].toString()
-                    val reportAddress2 = data["reportAddress2"].toString()
-                    val reportPhoto = data["reportPhoto"].toString()
-                    val repairPhoto = data["repairPhoto"].toString()
+                    for (data in queryDocumentSnapshots.documents) {
 
-                    var report = Reports(reportID,reportDate,reportTime,repairDate,repairTime,repairUser,reportType,reportLong,reportLat,reportUser,reportAddress1,reportAddress2,reportPhoto,repairPhoto)
-                    reports.add(report)
+                        val reportID = data.id
+                        val reportDate = data["reportDate"].toString()
+                        val reportTime = data["reportTime"].toString()
+                        val repairDate = data["repairDate"].toString()
+                        val repairTime = data["repairTime"].toString()
+                        val repairUser = data["repairUser"].toString()
+                        val reportType = data["reportType"].toString()
+                        val reportLong = data["reportLong"].toString()
+                        val reportLat = data["reportLat"].toString()
+                        val reportUser = data["reportUser"].toString()
+                        val reportAddress1 = data["reportAddress1"].toString()
+                        val reportAddress2 = data["reportAddress2"].toString()
+                        val reportPhoto = data["reportPhoto"].toString()
+                        val repairPhoto = data["repairPhoto"].toString()
+
+                        val report = Reports(
+                            reportID,
+                            reportDate,
+                            reportTime,
+                            repairDate,
+                            repairTime,
+                            repairUser,
+                            reportType,
+                            reportLong,
+                            reportLat,
+                            reportUser,
+                            reportAddress1,
+                            reportAddress2,
+                            reportPhoto,
+                            repairPhoto
+                        )
+                        reports.add(report)
+
+                    }
+
+                } else {
+
+                    Toast.makeText(applicationContext,"You have not booked any repairs. Book first.", Toast.LENGTH_LONG).show()
+
+                    val intent = Intent(this, Plumber::class.java)
+                    intent.putExtra("userName", userName)
+                    intent.putExtra("userType", userType)
+                    finish()
+                    startActivity(intent)
+
 
                 }
 
@@ -82,6 +113,20 @@ class Repair : AppCompatActivity() {
             .addOnFailureListener {
                 Toast.makeText(applicationContext,"Error getting documents: ", Toast.LENGTH_LONG).show()
             }
+
+    }
+
+    override fun onBackPressed() {
+
+        // To execute back press
+        // super.onBackPressed()
+
+        // To do something else
+        val intent = Intent(this, Plumber::class.java)
+        intent.putExtra("userName", userName)
+        intent.putExtra("userType", userType)
+        finish()
+        startActivity(intent)
 
     }
 }

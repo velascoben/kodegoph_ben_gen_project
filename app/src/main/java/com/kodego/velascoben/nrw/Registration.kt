@@ -1,5 +1,7 @@
 package com.kodego.velascoben.nrw
 
+import android.app.AlertDialog
+import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -58,6 +60,7 @@ class Registration : AppCompatActivity() {
 
                         // create an intent to switch to MainActivity after adding new user
                         val intent = Intent(this, Login::class.java)
+                        finish()
                         startActivity(intent)
 
                         Toast.makeText(applicationContext,"User added successfully!", Toast.LENGTH_LONG).show()
@@ -85,5 +88,17 @@ class Registration : AppCompatActivity() {
 
     private fun ByteArray.toHex(): String {
         return joinToString("") { "%02x".format(it) }
+    }
+
+    override fun onBackPressed() {
+        // To execute back press
+        // super.onBackPressed()
+
+        // To do something else
+
+        val intent = Intent(this, Login::class.java)
+        finish()
+        startActivity(intent)
+
     }
 }

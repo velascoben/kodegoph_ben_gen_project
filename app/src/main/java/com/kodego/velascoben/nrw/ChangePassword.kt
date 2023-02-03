@@ -32,6 +32,8 @@ class ChangePassword : AppCompatActivity() {
         setContentView(binding.root)
 
         userName = intent.getStringExtra("userName").toString()
+        userType = intent.getStringExtra("userType").toString()
+
         userDao.get()
             .whereEqualTo("userName",userName) // Gets the data from the database from the logged in user
             .get()
@@ -68,7 +70,6 @@ class ChangePassword : AppCompatActivity() {
                         val progressDialog = ProgressDialog(this)
                         progressDialog.setMessage("Updating password...")
                         progressDialog.setCancelable(false)
-                        progressDialog
                         progressDialog.show()
 
                         // Call function to save data to database
@@ -81,11 +82,13 @@ class ChangePassword : AppCompatActivity() {
                         if(userType == "detector") {
                             val intent = Intent(this, MainActivity::class.java)
                             intent.putExtra("userName", userName)
+                            intent.putExtra("userType", userType)
                             finish()
                             startActivity(intent)
                         } else {
                             val intent = Intent(this, Plumber::class.java)
                             intent.putExtra("userName", userName)
+                            intent.putExtra("userType", userType)
                             finish()
                             startActivity(intent)
                         }
@@ -133,4 +136,18 @@ class ChangePassword : AppCompatActivity() {
         return joinToString("") { "%02x".format(it) }
     }
     // Encrypt Password - End Here
+
+    override fun onBackPressed() {
+
+        // To execute back press
+        // super.onBackPressed()
+
+        // To do something else
+        val intent = Intent(this, Options::class.java)
+        intent.putExtra("userName", userName)
+        intent.putExtra("userType", userType)
+        finish()
+        startActivity(intent)
+
+    }
 }

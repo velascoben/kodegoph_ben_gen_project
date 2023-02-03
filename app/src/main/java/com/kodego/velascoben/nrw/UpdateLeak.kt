@@ -38,6 +38,7 @@ class UpdateLeak : AppCompatActivity() {
 
     private lateinit var binding: ActivityUpdateLeakBinding
     private lateinit var userName : String
+    private lateinit var userType : String
     private lateinit var reportID : String
 
     private var reportDao = ReportsDao()
@@ -62,6 +63,7 @@ class UpdateLeak : AppCompatActivity() {
         setContentView(binding.root)
 
         userName = intent.getStringExtra("userName").toString()
+        userType = intent.getStringExtra("userType").toString()
         reportID = intent.getStringExtra("reportID").toString()
 
         binding.imgUpdateRepair.visibility = View.GONE
@@ -171,7 +173,6 @@ class UpdateLeak : AppCompatActivity() {
                 val progressDialog = ProgressDialog(this)
                 progressDialog.setMessage("Updating report...")
                 progressDialog.setCancelable(false)
-                progressDialog
                 progressDialog.show()
 
                 // Get the data from an ImageView as bytes
@@ -209,6 +210,7 @@ class UpdateLeak : AppCompatActivity() {
 
                         val intent = Intent(this, Plumber::class.java)
                         intent.putExtra("userName", userName)
+                        intent.putExtra("userType", userType)
                         finish()
                         startActivity(intent)
 
@@ -307,6 +309,20 @@ class UpdateLeak : AppCompatActivity() {
         mapData["reportPhoto"] = reportPhoto
         mapData["repairPhoto"] = repairPhoto
         reportDao.update(id,mapData)
+    }
+
+    override fun onBackPressed() {
+
+        // To execute back press
+        // super.onBackPressed()
+
+        // To do something else
+        val intent = Intent(this, Repair::class.java)
+        intent.putExtra("userName", userName)
+        intent.putExtra("userType", userType)
+        finish()
+        startActivity(intent)
+
     }
 
 }

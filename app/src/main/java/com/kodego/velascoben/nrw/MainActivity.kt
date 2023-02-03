@@ -14,7 +14,6 @@ import com.google.firebase.storage.FirebaseStorage
 import com.kodego.velascoben.nrw.databinding.ActivityMainBinding
 import com.kodego.velascoben.nrw.db.Reports
 import com.kodego.velascoben.nrw.db.ReportsDao
-import com.kodego.velascoben.nrw.db.Users
 import com.kodego.velascoben.nrw.db.UsersDao
 import java.io.File
 
@@ -24,7 +23,7 @@ class MainActivity : AppCompatActivity() {
     private var userDao = UsersDao()
     private var reportDao = ReportsDao()
     lateinit var userName : String
-    private lateinit var userType : String
+    lateinit var userType : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -32,12 +31,45 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         userName = intent.getStringExtra("userName").toString()
+        userType = intent.getStringExtra("userType").toString()
         var countReports : Int
         var userReports : Int
+
+        userDao.get()
+            .whereEqualTo("userName",userName)
+            .get()
+            .addOnSuccessListener { queryDocumentSnapshots ->
+
+                for (data in queryDocumentSnapshots.documents) {
+
+                    binding.tvFirstName.text = data["userFirst"].toString()
+                    val userPhoto = data["userPhoto"].toString()
+
+                    if(userPhoto != "") {
+                        // Retrieve Image
+                        val storageRef = FirebaseStorage.getInstance().reference.child("images/$userPhoto")
+                        val localFile = File.createTempFile("tempImage","jpg")
+                        storageRef.getFile(localFile)
+                            .addOnSuccessListener {
+                                val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+                                binding.userImage.setImageBitmap(bitmap)
+                            }
+
+                    } else {
+                        binding.userImage.setImageResource(R.drawable.ic_user)
+                    }
+
+                }
+
+            }
+            .addOnFailureListener {
+                Toast.makeText(applicationContext,"Error getting documents: ", Toast.LENGTH_LONG).show()
+            }
 
         binding.userImage.setOnClickListener() {
             val intent = Intent(this, Options::class.java)
             intent.putExtra("userName", userName)
+            intent.putExtra("userType", userType)
             startActivity(intent)
         }
 
@@ -52,44 +84,12 @@ class MainActivity : AppCompatActivity() {
             alert.show()
         }
 
-        userDao.get()
-            .whereEqualTo("userName",userName)
-            .get()
-            .addOnSuccessListener { queryDocumentSnapshots ->
-
-                for (data in queryDocumentSnapshots.documents) {
-
-                    binding.tvFirstName.text = data["userFirst"].toString()
-                    var userPhoto = data["userPhoto"].toString()
-                    userType = data["userType"].toString()
-
-                    if(userPhoto != "") {
-                        binding.userImage.setImageResource(R.drawable.ic_user)
-                    } else {
-                        // Retrieve Image
-                        val imageName = userPhoto
-                        val storageRef = FirebaseStorage.getInstance().reference.child("images/$imageName")
-                        val localFile = File.createTempFile("tempImage","jpg")
-                        storageRef.getFile(localFile)
-                            .addOnSuccessListener {
-                                val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
-                                binding.userImage.setImageBitmap(bitmap)
-                            }
-                    }
-
-                }
-
-            }
-            .addOnFailureListener {
-                Toast.makeText(applicationContext,"Error getting documents: ", Toast.LENGTH_LONG).show()
-            }
-
         reportDao.get()
             .whereEqualTo("reportUser",userName)
             .get()
             .addOnSuccessListener { queryDocumentSnapshots ->
 
-                var reports : ArrayList<Reports> = ArrayList<Reports>()
+                val reports : ArrayList<Reports> = ArrayList<Reports>()
 
                 for (data in queryDocumentSnapshots.documents) {
 
@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity() {
                     val reportPhoto = data["reportPhoto"].toString()
                     val repairPhoto = data["repairPhoto"].toString()
 
-                    var report = Reports("",reportDate,reportTime,repairDate,repairTime,repairUser,reportType,reportLong,reportLat,reportUser,reportAddress1,reportAddress2,reportPhoto,repairPhoto)
+                    val report = Reports("",reportDate,reportTime,repairDate,repairTime,repairUser,reportType,reportLong,reportLat,reportUser,reportAddress1,reportAddress2,reportPhoto,repairPhoto)
                     reports.add(report)
 
                 }
@@ -163,7 +163,7 @@ class MainActivity : AppCompatActivity() {
                                 binding.tvUserReport.text = userReports.toString()
 
                                 if (countReports > 0) {
-                                    var user = SortedUsers(
+                                    val user = SortedUsers(
                                         countReports,
                                         username,
                                         userPhoto,
@@ -214,6 +214,7 @@ class MainActivity : AppCompatActivity() {
 
                val intent = Intent(this, LeakReport::class.java)
                intent.putExtra("userName", userName)
+               intent.putExtra("userType", userType)
                finish()
                startActivity(intent)
 
@@ -223,6 +224,39 @@ class MainActivity : AppCompatActivity() {
 
            }
         }
+
+    }
+
+    // Press Back Button
+    override fun onBackPressed() {
+
+        // To execute back press
+        // super.onBackPressed()
+
+        // To do something else
+            val builder = AlertDialog.Builder(this@MainActivity)
+            builder.setMessage("You will be logged out. Do you want to logout?")
+                .setCancelable(false)
+                .setPositiveButton("Yes") { dialog, id ->
+                    // Delete selected note from database
+                    val progressDialog = ProgressDialog(this)
+                    progressDialog.setMessage("Logging out...")
+                    progressDialog.setCancelable(false)
+                    progressDialog.show()
+
+                    // Logout of the app
+                    val intent = Intent(this, Login::class.java)
+                    finish()
+                    startActivity(intent)
+
+                }
+                .setNegativeButton("No") { dialog, id ->
+                    // Dismiss the dialog
+                    dialog.dismiss()
+                }
+
+            val alert = builder.create()
+            alert.show()
 
     }
 }

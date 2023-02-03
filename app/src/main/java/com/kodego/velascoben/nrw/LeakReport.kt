@@ -53,8 +53,8 @@ class LeakReport : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var latitude : String
     private lateinit var longitude : String
     private lateinit var userName : String
+    private lateinit var userType : String
 
-    private var userDao = UsersDao()
     private var reportsDao = ReportsDao()
 
     private val presenter = MapPresenter(this)
@@ -68,6 +68,7 @@ class LeakReport : AppCompatActivity(), OnMapReadyCallback {
         setContentView(binding.root)
 
         userName = intent.getStringExtra("userName").toString()
+        userType = intent.getStringExtra("userType").toString()
 
         binding.imgLeakage.visibility = View.GONE
 
@@ -171,7 +172,6 @@ class LeakReport : AppCompatActivity(), OnMapReadyCallback {
                 val progressDialog = ProgressDialog(this)
                 progressDialog.setMessage("Submitting report...")
                 progressDialog.setCancelable(false)
-                progressDialog
                 progressDialog.show()
 
                 // Get the data from an ImageView as bytes
@@ -194,6 +194,7 @@ class LeakReport : AppCompatActivity(), OnMapReadyCallback {
 
                         val intent = Intent(this, MainActivity::class.java)
                         intent.putExtra("userName", userName)
+                        intent.putExtra("userType", userType)
                         finish()
                         startActivity(intent)
 
@@ -303,5 +304,19 @@ class LeakReport : AppCompatActivity(), OnMapReadyCallback {
                 binding.imgLeakage.visibility = View.VISIBLE // Shows the photo being captured by camera
             }
         }
+    }
+
+    override fun onBackPressed() {
+
+        // To execute back press
+        // super.onBackPressed()
+
+        // To do something else
+        val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra("userName", userName)
+        intent.putExtra("userType", userType)
+        finish()
+        startActivity(intent)
+
     }
 }

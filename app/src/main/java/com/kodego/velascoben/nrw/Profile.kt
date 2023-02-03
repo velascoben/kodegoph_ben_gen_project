@@ -52,6 +52,7 @@ class Profile : AppCompatActivity() {
         setContentView(binding.root)
 
         userName = intent.getStringExtra("userName").toString()
+        userType = intent.getStringExtra("userType").toString()
 
         binding.userImage.setOnClickListener() {
             showGallery()
@@ -71,9 +72,7 @@ class Profile : AppCompatActivity() {
                     userID = data.id // Gets the document ID from the database
                     userFirst = data["userFirst"].toString()
                     userLast = data["userLast"].toString()
-                    userName = data["userName"].toString()
                     userPass = data["userPass"].toString()
-                    userType = data["userType"].toString()
 
                     binding.etFirstName.setText(userFirst)
                     binding.etLastName.setText(userLast)
@@ -128,7 +127,6 @@ class Profile : AppCompatActivity() {
                     val progressDialog = ProgressDialog(this)
                     progressDialog.setMessage("Updating profile...")
                     progressDialog.setCancelable(false)
-                    progressDialog
                     progressDialog.show()
 
                     // Get the data from an ImageView as bytes
@@ -136,7 +134,7 @@ class Profile : AppCompatActivity() {
                     binding.userImage.buildDrawingCache()
                     val bitmap = (binding.userImage.drawable as BitmapDrawable).bitmap
                     val baos = ByteArrayOutputStream()
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos)
                     val data = baos.toByteArray()
 
                     // Call function to save data to database
@@ -162,11 +160,13 @@ class Profile : AppCompatActivity() {
                             if(userType == "detector") {
                                 val intent = Intent(this, MainActivity::class.java)
                                 intent.putExtra("userName", userName)
+                                intent.putExtra("userType", userType)
                                 finish()
                                 startActivity(intent)
                             } else {
                                 val intent = Intent(this, Plumber::class.java)
                                 intent.putExtra("userName", userName)
+                                intent.putExtra("userType", userType)
                                 finish()
                                 startActivity(intent)
                             }
@@ -254,5 +254,19 @@ class Profile : AppCompatActivity() {
     }
 
     // Update Data - End Here
+
+    override fun onBackPressed() {
+
+        // To execute back press
+        // super.onBackPressed()
+
+        // To do something else
+        val intent = Intent(this, Options::class.java)
+        intent.putExtra("userName", userName)
+        intent.putExtra("userType", userType)
+        finish()
+        startActivity(intent)
+
+    }
 
 }
